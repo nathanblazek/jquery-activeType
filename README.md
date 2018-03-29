@@ -1,2 +1,2 @@
-# jquery-activeType
-Active Type into a textarea and markup will be translated into displayable content for easier reference.
+# activeType
+A plugin that turns text into friendly html while the user actively types into a textarea

@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>Basic Example of plugin use</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="../src/active-type.js"></script>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <textarea id="active-type"></textarea>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var data = {};
+
+       $("#active-type").activeType(data);
+    });
+</script>
+
+</body>
+</html>
