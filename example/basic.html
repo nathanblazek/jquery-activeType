@@ -19,7 +19,13 @@
     $(document).ready(function() {
         var options = {
             textarea_selector:'#active-type',
-            preview_selector:'#active-type-preview'
+            preview_selector:'#active-type-preview',
+            markup:[
+                {},
+                {},
+                {}
+            ],
+            
         };
 
        $("#active-type").activeType(options);
