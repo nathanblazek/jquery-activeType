@@ -2,6 +2,7 @@
 <head>
     <title>Basic Example of plugin use</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../packages/ckeditor/ckeditor.js"></script>
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="../src/active-type.js"></script>
 
@@ -14,9 +15,15 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        var data = {};
+        var options = {
+            selector:'#active-type',
 
-       $("#active-type").activeType(data);
+            tinymce:{
+                //insert custom tinymce settings here
+            }
+        };
+
+       $("#active-type").activeType(options);
     });
 </script>
 
