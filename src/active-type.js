@@ -19,13 +19,13 @@
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 (function ($) {
-
     $.fn.activeType = function (options) {
-        var saveFrequency = 1000; //15 seconds
+        var saveFrequency = 15000; //15 seconds
         var lastChecked = new Date().getTime();
 
         //I want to save textarea changes every 15 seconds, but only if the textarea updated
-        $(document).on('keypress',options.selector,function() {
+       $(document).on('keypress',options.selector,function() {
+        updatePreview();
             var thisTime = new Date().getTime();
             //Make sure the save frequency has elapsed since the last update
             if(thisTime > (lastChecked+saveFrequency)){
@@ -38,11 +38,18 @@
 
 
 
-        CKEDITOR.replace( options.selector );
+
         // Creates TinyMCE defaults, allowing user override, except for selector. activeType defaults to plain textarea with html capabilities
-        //var tinyMCEOptions = $.extend({},{menubar:false,statusbar: false,toolbar:false},options.tinymce,{selector:options.selector});
-        //tinymce.init(tinyMCEOptions);
+        
+
+        //setInterval(updateEditor,0);   
+
+        function updatePreview(){
+            $(options.preview_selector).html($(options.textarea_selector).val());
+            console.log($(options.textarea_selector).val());
+        }
 
     }
+
 
 }(jQuery));

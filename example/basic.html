@@ -2,25 +2,24 @@
 <head>
     <title>Basic Example of plugin use</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="../packages/ckeditor/ckeditor.js"></script>
-    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
     <script src="../src/active-type.js"></script>
 
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
 </head>
-<body>
-<div class="container">
-    <textarea id="active-type"></textarea>
+<body style="margin:0; padding:0;">
+<div class="container" style="width:100%; height:100%;">
+    <div style="float:left; width:50%; height:100%;">
+        <textarea id="active-type" style="height:100%; width:100%;"></textarea>
+    </div>
+    <div style="float:left; width:50%" id="active-type-preview"></div>
 </div>
-
+    
 <script type="text/javascript">
     $(document).ready(function() {
         var options = {
-            selector:'#active-type',
-
-            tinymce:{
-                //insert custom tinymce settings here
-            }
+            textarea_selector:'#active-type',
+            preview_selector:'#active-type-preview'
         };
 
        $("#active-type").activeType(options);
