@@ -24,7 +24,7 @@
         var lastChecked = new Date().getTime();
 
         //I want to save textarea changes every 15 seconds, but only if the textarea updated
-       $(document).on('keypress',options.selector,function() {
+       $(document).on('change keyup',options.selector,function() {
         updatePreview();
             var thisTime = new Date().getTime();
             //Make sure the save frequency has elapsed since the last update
@@ -32,7 +32,6 @@
                 //Save the notes
                 lastChecked = thisTime;
                 //If storing a new entry, I need to update the method and url so it can be edited moving forward
-                console.log('textarea changed!!')
             }
         });
 
@@ -44,9 +43,37 @@
 
         //setInterval(updateEditor,0);   
 
+
+        var defaultRegex = {
+                '(#+)(.*)':header, //header
+                '\\n([^\\n]+)\\n':'<p>$1</p>' //line breaks and paragraphs
+    };
+        function header(match, contents, offset, input_string){
+            var num = contents.length;
+            return '<h' + num + '>'+offset+'</h' + num + '>';
+        }
+        function paragraph(match, contents, offset, input_string){
+            return '<p>'+offset+'</p>';
+        }
+
         function updatePreview(){
-            $(options.preview_selector).html($(options.textarea_selector).val());
-            console.log($(options.textarea_selector).val());
+            var originalText = $(options.textarea_selector).val();
+            var resultText = originalText;
+            //var arrayOfLines = lineString.match(/[^\r\n]+/g);
+            //Process each regular expressions
+            $.each(defaultRegex,function(expression,replacement){
+                var regex = new RegExp(expression,"g");
+                //Process the regex against the input data.
+                resultText = resultText.replace(regex,replacement);
+
+
+
+                console.log(resultText);
+            });
+
+
+            //Put the results back onto the pages preview container.
+            $(options.preview_selector).html(resultText);
         }
 
     }
