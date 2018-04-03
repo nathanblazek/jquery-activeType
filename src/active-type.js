@@ -45,15 +45,23 @@
 
 
         var defaultRegex = {
-                '(#+)(.*)':header, //header
-                '\\n([^\\n]+)\\n':'<p>$1</p>' //line breaks and paragraphs
+                /* Header */    '(#+)(.*)': header,
+                /* Paragraph */ '\\n([^\\n]+)\\n': '<p>$1</p>',
+                /* Bold */      '(\\*\\*|__)(.*?)\\1': '<strong>$2</strong>',
+                /* Link */      '\\[([^\\[]+)\\]\\(([^\\)]+)\\)': '<a href=\'$2\'>$1</a>'
     };
         function header(match, contents, offset, input_string){
             var num = contents.length;
             return '<h' + num + '>'+offset+'</h' + num + '>';
         }
-        function paragraph(match, contents, offset, input_string){
-            return '<p>'+offset+'</p>';
+
+        function para (text, line) {
+            debugger;
+            var trimmed = line.trim();
+            if (/^<\/?(ul|ol|li|h|p|bl)/i.test(trimmed)) {
+                return '\n' + line + '\n';
+            }
+            return '\n<p>' + trimmed + '</p>\n';
         }
 
         function updatePreview(){
@@ -65,10 +73,6 @@
                 var regex = new RegExp(expression,"g");
                 //Process the regex against the input data.
                 resultText = resultText.replace(regex,replacement);
-
-
-
-                console.log(resultText);
             });
 
 
