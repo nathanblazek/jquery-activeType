@@ -35,7 +35,7 @@
             }
         });
 
-
+        $(options.selector).trigger('change keyup');
 
 
         // Creates TinyMCE defaults, allowing user override, except for selector. activeType defaults to plain textarea with html capabilities
@@ -43,25 +43,48 @@
 
         //setInterval(updateEditor,0);   
 
-
+        //The order of the regex is important. For example, if I process paragraph first, the <p> tags will exists in
+        // elements that shouldn't contain them.
         var defaultRegex = {
-                /* Header */    '(#+)(.*)': header,
-                /* Paragraph */ '\\n([^\\n]+)\\n': '<p>$1</p>',
-                /* Bold */      '(\\*\\*|__)(.*?)\\1': '<strong>$2</strong>',
-                /* Link */      '\\[([^\\[]+)\\]\\(([^\\)]+)\\)': '<a href=\'$2\'>$1</a>'
+                /* Header */    '(#+)(.*)':                         header,
+                /* Bold */      '(\\*\\*|__)(.*?)\\1':              '<strong>$2</strong>',
+                /* Link */      '\\[([^\\[]+)\\]\\(([^\\)]+)\\)':   '<a href=\'$2\'>$1</a>',
+                /* Hor. Rule */ '\\n-{5,}':                         '\n<hr />',
+                /* Code */      '`(.*?)`':                          '<code>$1</code>',
+                /* List UL */   '((?:\\*.*\\n)+)':                  list_ul,
+                /* List OL */   '((?:[0-9]+\\..*\\n)+)':            list_ol,
+                /* Blockquote */'\n(&gt;|\>)(.*)':                  '\n<blockquote>$2</blockquote>',
+                /* Paragraph */ '\\n([^\\n]+)\\n':                  paragraph,
     };
         function header(match, contents, offset, input_string){
             var num = contents.length;
-            return '<h' + num + '>'+offset+'</h' + num + '>';
+            return '<h' + num + '>'+offset.trim()+'</h' + num + '>';
+        }
+        function list_ul(entire_group){
+            // Returns the entire li group since the regex grabbed all the items in the grouping
+            // Now I can add <ul> around the results and <li> tags around each list item
+
+            var result = entire_group.trim();
+            result = result.replace(/\*(.*)/g,'<li>$1</li>');
+            return '<ul>'+result+'</ul>';
         }
 
-        function para (text, line) {
-            debugger;
-            var trimmed = line.trim();
-            if (/^<\/?(ul|ol|li|h|p|bl)/i.test(trimmed)) {
-                return '\n' + line + '\n';
+        function list_ol(entire_group){
+            // Returns the entire li group since the regex grabbed all the items in the grouping
+            // Now I can add <ol> around the results and <li> tags around each list item
+
+            var result = entire_group.trim();
+            result = result.replace(/^[0-9]*\.(.*)/gm,'<li>$1</li>');
+            return '<ol>'+result+'</ol>';
+        }
+
+        function paragraph(match, content) {
+            var result = content.trim();
+            // Prevent insertion of <p> tag inside an existing tag that should not contain p tags
+            if (/^<\/?(h|p|bl|ul|ol|li)/i.test(result)) {
+                return '\n' + content + '\n';
             }
-            return '\n<p>' + trimmed + '</p>\n';
+            return '\n<p>' + result + '</p>\n';
         }
 
         function updatePreview(){
@@ -70,7 +93,7 @@
             //var arrayOfLines = lineString.match(/[^\r\n]+/g);
             //Process each regular expressions
             $.each(defaultRegex,function(expression,replacement){
-                var regex = new RegExp(expression,"g");
+                var regex = new RegExp(expression,"gm");
                 //Process the regex against the input data.
                 resultText = resultText.replace(regex,replacement);
             });

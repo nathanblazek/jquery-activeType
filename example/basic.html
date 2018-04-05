@@ -2,15 +2,30 @@
 <head>
     <title>Basic Example of plugin use</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
     <script src="../src/active-type.js"></script>
+
+    <!-- Bootstrap not required since you can style your html however you wish -->
+    <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+
 </head>
-<body style="overflow:none; margin:0; padding:0;">
+<body style="height:100%; overflow-y:hidden; margin:0; padding:0;">
 <div class="container" style="width:100%; height:100%;">
     <div style="float:left; width:50%; height:100%;">
-        <textarea id="active-type" style="height:100%; width:100%;"></textarea>
+<textarea id="active-type" style="height:100%; width:100%;">
+#Welcome to ActiveType Markdown Parser!
+##By Nathan Blazek
+Thank you for checking out my plugin. I created this plugin for a personal project of mine located at [my personal web site](http://www.nateblazek.com)...eventually!
+###Goals
+1. Actively parse markdown and display it on the webpage as a user updates it.
+12. Process markdown by using basic regex
+33. Get better at using regex..**I suck at it**, I really do. I use it very periodically and I never get held up by it, but I do not feel confident enough to use it without the help of [Google](http://www.google.com) or online test sites like [Regex101](http://www.regex101.com)
+3. Allow Regex to be passed into the plugin. This, at it's core, was a requirement of mine. I want to store markdown in a table, parsing it server side to deliver onto a webpage. Rewriting regex didnt sound like fun and I hate code duplication. Allowing regex to be passed into this plugin solves my concerns.
+------------
+###Markdown Logic
+</textarea>
     </div>
-    <div style="overflow-y:scroll; float:left; width:50%" id="active-type-preview"></div>
+    <div style="height:100%; overflow-y:scroll; float:left; width:50%" id="active-type-preview"></div>
 </div>
     
 <script type="text/javascript">
