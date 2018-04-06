@@ -19,9 +19,11 @@
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 (function ($) {
+    var methods = {
+
+    }
     $.fn.activeType = function (options) {
-        var saveFrequency = 15000; //15 seconds
-        var lastChecked = new Date().getTime();
+        var textarea = this;
 
         var defaultRegex = [
             {name:'header', regex:/(#+)(.*)/g,                  replace: header},
@@ -36,8 +38,6 @@
             {name:'para',   regex:/\n([^\n]+)\n/gm,             replace: paragraph},
             {name:'cleanup',regex:/\\/gm,                       replace: ''}
         ];
-
-        /* REGEX FUNCTIONS */
 
         /**
          * Processes header markdown, while counting the # signs to determine header size
@@ -107,7 +107,6 @@
 
             //Process each regular expression
             $.each(defaultRegex,function(index,item){
-                console.log(item);
                 var replacement = (options.markdown && options.markdown[item.name])?options.markdown[item.name]: item.replace;
                 resultText = resultText.replace(item.regex,replacement);
             });
@@ -120,27 +119,19 @@
             return resultText;
         }
 
+        /**
+         * Simply updates the preview contain with the rendered markdown from the parent selector(textarea)
+         */
+        function refresh(){
+            $(options.preview_selector).html(render($(textarea).val()));
+        }
+
         /* PROCESSING FUNCTIONS */
-        //I want to save textarea changes every 15 seconds, but only if the textarea updated
-        $(document).on('change keyup',options.selector,function() {
+        $(document).on('change keyup',textarea,refresh);
 
-            var result = render($(options.textarea_selector).val());
-
-            //place results into the preview container
-            $(options.preview_selector).html(result);
-
-            var thisTime = new Date().getTime();
-            //Make sure the save frequency has elapsed since the last update
-            if(thisTime > (lastChecked+saveFrequency)){
-                //Save the notes
-                lastChecked = thisTime;
-                //If storing a new entry, I need to update the method and url so it can be edited moving forward
-            }
-        });
-
-        $(options.selector).trigger('change keyup');
+        return {
+            refresh:refresh
+        }
 
     }
-
-
 }(jQuery));

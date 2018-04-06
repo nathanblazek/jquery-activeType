@@ -2,7 +2,7 @@
 <head>
     <title>Basic Example of plugin use</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="../src/active-type.js"></script>
+    <script src="../src/active-type.min.js"></script>
 
     <!-- Bootstrap not required since you can style your html however you wish -->
     <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -22,13 +22,13 @@
 </head>
 <body>
 <div style="width:100%; height:100%;">
-    <div style="float:left; width:50%; height:100%;">
+    <div style="float:left; width:49%; height:100%;">
         <textarea id="active-type" style="height:100%; width:100%;">
 # Welcome to ActiveType Markdown Parser!
 ###### By Nathan Blazek
 Thank you for checking out my **plugin**. I created this plugin for a personal project of mine located at [my personal web site](http://www.nateblazek.com)...*eventually*
 
-    #### Ordered List
+#### Ordered List
 1. List Item 1
 12. List Item 2
 33. List Item 3
@@ -41,21 +41,20 @@ Thank you for checking out my **plugin**. I created this plugin for a personal p
 * Unordered Item D
 
 ------------
-            #### Custom Overrides
-            Below is some custom code that the passed in regex is processing!
+#### Custom Overrides
+Below is some custom code that the passed in regex is processing!
 {{Box:1 title:A custom box! What?!.}}
-            The default italics was modified in this code to inject !!! before and after the italic text, e.g. *italic text*
+The default italics was modified in this code to inject !!! before and after the italic text, e.g. *italic text*
 
         </textarea>
     </div>
-    <div style="height:100%; overflow-y:scroll; float:left; width:50%" id="active-type-preview"></div>
+    <div style="height:100%; overflow-y:scroll; float:left; width:49%; margin-left:2%;" id="active-type-preview"></div>
 </div>
     
 <script type="text/javascript">
     $(document).ready(function() {
         var options = {
-            textarea_selector:'#active-type',
-            preview_selector:'#active-type-preview',
+            preview_selector:'#active-type-preview', //Required
             markdown:{ //Enter custom regex in here, identical regex will overwrite defaults
                 'italics':'<em>!!! $2 !!!</em>', // The default italics will now be this
             },
@@ -68,7 +67,8 @@ Thank you for checking out my **plugin**. I created this plugin for a personal p
             
         };
 
-       $("#active-type").activeType(options);
+       var activeType = $("#active-type").activeType(options);
+       activeType.refresh(); //Use when loading text into the textarea on a pageload to render the markdown
     });
 </script>
 
