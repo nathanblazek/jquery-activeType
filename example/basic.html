@@ -6,24 +6,47 @@
 
     <!-- Bootstrap not required since you can style your html however you wish -->
     <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <link type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+    <style>
+        .card {
+            width:18rem;
+        }
+        body {
+            height:100%;
+            width:100%;
+            overflow-y:hidden;
+            margin:0;
+            padding:0;
+        }
+    </style>
 </head>
-<body style="height:100%; overflow-y:hidden; margin:0; padding:0;">
-<div class="container" style="width:100%; height:100%;">
+<body>
+<div style="width:100%; height:100%;">
     <div style="float:left; width:50%; height:100%;">
-<textarea id="active-type" style="height:100%; width:100%;">
-#Welcome to ActiveType Markdown Parser!
-##By Nathan Blazek
-Thank you for checking out my plugin. I created this plugin for a personal project of mine located at [my personal web site](http://www.nateblazek.com)...eventually!
-###Goals
-1. Actively parse markdown and display it on the webpage as a user updates it.
-12. Process markdown by using basic regex
-33. Get better at using regex..**I suck at it**, I really do. I use it very periodically and I never get held up by it, but I do not feel confident enough to use it without the help of [Google](http://www.google.com) or online test sites like [Regex101](http://www.regex101.com)
-3. Allow Regex to be passed into the plugin. This, at it's core, was a requirement of mine. I want to store markdown in a table, parsing it server side to deliver onto a webpage. Rewriting regex didnt sound like fun and I hate code duplication. Allowing regex to be passed into this plugin solves my concerns.
+        <textarea id="active-type" style="height:100%; width:100%;">
+# Welcome to ActiveType Markdown Parser!
+###### By Nathan Blazek
+Thank you for checking out my **plugin**. I created this plugin for a personal project of mine located at [my personal web site](http://www.nateblazek.com)...*eventually*
+
+    #### Ordered List
+1. List Item 1
+12. List Item 2
+33. List Item 3
+3. List Item 4
+
+#### Unordered List
+* Unordered Item A
+* Unordered Item B
+* Unordered Item C
+* Unordered Item D
+
 ------------
-###Markdown Logic
-</textarea>
+            #### Custom Overrides
+            Below is some custom code that the passed in regex is processing!
+{{Box:1 title:A custom box! What?!.}}
+            The default italics was modified in this code to inject !!! before and after the italic text, e.g. *italic text*
+
+        </textarea>
     </div>
     <div style="height:100%; overflow-y:scroll; float:left; width:50%" id="active-type-preview"></div>
 </div>
@@ -33,11 +56,15 @@ Thank you for checking out my plugin. I created this plugin for a personal proje
         var options = {
             textarea_selector:'#active-type',
             preview_selector:'#active-type-preview',
-            markdown:[
-                {},
-                {},
-                {}
-            ],
+            markdown:{ //Enter custom regex in here, identical regex will overwrite defaults
+                'italics':'<em>!!! $2 !!!</em>', // The default italics will now be this
+            },
+            regex:[
+                {   name:'Box',
+                    regex:/{{Box:([0-9]*) title:(.*)}}/g,
+                    replace:'<div class="card" id="box_$1"><div class="card-body">$2</div></div>'
+                }
+            ]
             
         };
 

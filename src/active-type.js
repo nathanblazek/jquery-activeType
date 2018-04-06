@@ -23,9 +23,112 @@
         var saveFrequency = 15000; //15 seconds
         var lastChecked = new Date().getTime();
 
+        var defaultRegex = [
+            {name:'header', regex:/(#+)(.*)/g,                  replace: header},
+            {name:'bold',   regex:/(\*\*|__)(.*?)\1/g,          replace: '<strong>$2</strong>'},
+            {name:'link',   regex:/\[([^\[]+)\]\(([^\)]+)\)/g,  replace: '<a href=\'$2\'>$1</a>'},
+            {name:'rule',   regex:/\n-{5,}/g,                   replace: '\n<hr />'},
+            {name:'code',   regex:/`(.*?)`/g,                   replace: '<code>$1</code>'},
+            {name:'italics',regex:/(\*|_)(.*?)\1/g,             replace: '<em>$2</em>'},
+            {name:'bquote', regex:/\n(&gt;|\>)(.*)/g,           replace: '\n<blockquote>$2</blockquote>'},
+            {name:'ul',     regex:/((?:\*.*\n)+)/gm,            replace: list_ul},
+            {name:'ol',     regex:/((?:[0-9]+\..*\n)+)/gm,      replace: list_ol},
+            {name:'para',   regex:/\n([^\n]+)\n/gm,             replace: paragraph},
+            {name:'cleanup',regex:/\\/gm,                       replace: ''}
+        ];
+
+        /* REGEX FUNCTIONS */
+
+        /**
+         * Processes header markdown, while counting the # signs to determine header size
+         * @param match - not used
+         * @param contents
+         * @param offset
+         * @returns {string}
+         */
+        function header(match, contents, offset){
+            var num = contents.length;
+            return '<h' + num + '>'+offset.trim()+'</h' + num + '>';
+        }
+
+        /**
+         * For unordered lists
+         * Processes the list group as a whole, then breaks down each list item
+         * @param entire_group
+         * @returns {string}
+         */
+        function list_ul(entire_group){
+            // Returns the entire li group since the regex grabbed all the items in the grouping
+            // Now I can add <ul> around the results and <li> tags around each list item
+
+            var result = entire_group.trim();
+            result = result.replace(/\*(.*)/g,'<li>$1</li>');
+            return '<ul>'+result+'</ul>';
+        }
+
+        /**
+         * For ordered lists
+         * Processes the list group as a whole, then breaks down each list item
+         * @param entire_group
+         * @returns {string}
+         */
+        function list_ol(entire_group){
+            // Returns the entire li group since the regex grabbed all the items in the grouping
+            // Now I can add <ol> around the results and <li> tags around each list item
+
+            var result = entire_group.trim();
+            result = result.replace(/^[0-9]*\.(.*)/gm,'<li>$1</li>');
+            return '<ol>'+result+'</ol>';
+        }
+
+        /**
+         * Adds <p> tags around blocks of text, as long as it does not overlap a closing html tag
+         * @param match - not used
+         * @param content
+         * @returns {string}
+         */
+        function paragraph(match, content) {
+            var result = content.trim();
+            // Prevent insertion of <p> tag inside an existing tag that should not contain p tags
+            if (/^<\/?(h|p|bl|ul|ol|li)/i.test(result)) {
+                return '\n' + content + '\n';
+            }
+            return '\n<p>' + result + '</p>\n';
+        }
+
+
+        /**
+         * Renders text by using the regex, returning the resulting string
+         * @param originalText
+         * @returns {string}
+         */
+        function render(originalText){
+            var resultText = originalText;
+
+            //Process each regular expression
+            $.each(defaultRegex,function(index,item){
+                console.log(item);
+                var replacement = (options.markdown && options.markdown[item.name])?options.markdown[item.name]: item.replace;
+                resultText = resultText.replace(item.regex,replacement);
+            });
+
+            //Process custom regex
+            $.each(options.regex,function(index,item){
+                resultText = resultText.replace(item.regex,item.replace);
+            });
+
+            return resultText;
+        }
+
+        /* PROCESSING FUNCTIONS */
         //I want to save textarea changes every 15 seconds, but only if the textarea updated
-       $(document).on('change keyup',options.selector,function() {
-        updatePreview();
+        $(document).on('change keyup',options.selector,function() {
+
+            var result = render($(options.textarea_selector).val());
+
+            //place results into the preview container
+            $(options.preview_selector).html(result);
+
             var thisTime = new Date().getTime();
             //Make sure the save frequency has elapsed since the last update
             if(thisTime > (lastChecked+saveFrequency)){
@@ -36,72 +139,6 @@
         });
 
         $(options.selector).trigger('change keyup');
-
-
-        // Creates TinyMCE defaults, allowing user override, except for selector. activeType defaults to plain textarea with html capabilities
-        
-
-        //setInterval(updateEditor,0);   
-
-        //The order of the regex is important. For example, if I process paragraph first, the <p> tags will exists in
-        // elements that shouldn't contain them.
-        var defaultRegex = {
-                /* Header */    '(#+)(.*)':                         header,
-                /* Bold */      '(\\*\\*|__)(.*?)\\1':              '<strong>$2</strong>',
-                /* Link */      '\\[([^\\[]+)\\]\\(([^\\)]+)\\)':   '<a href=\'$2\'>$1</a>',
-                /* Hor. Rule */ '\\n-{5,}':                         '\n<hr />',
-                /* Code */      '`(.*?)`':                          '<code>$1</code>',
-                /* List UL */   '((?:\\*.*\\n)+)':                  list_ul,
-                /* List OL */   '((?:[0-9]+\\..*\\n)+)':            list_ol,
-                /* Blockquote */'\n(&gt;|\>)(.*)':                  '\n<blockquote>$2</blockquote>',
-                /* Paragraph */ '\\n([^\\n]+)\\n':                  paragraph,
-    };
-        function header(match, contents, offset, input_string){
-            var num = contents.length;
-            return '<h' + num + '>'+offset.trim()+'</h' + num + '>';
-        }
-        function list_ul(entire_group){
-            // Returns the entire li group since the regex grabbed all the items in the grouping
-            // Now I can add <ul> around the results and <li> tags around each list item
-
-            var result = entire_group.trim();
-            result = result.replace(/\*(.*)/g,'<li>$1</li>');
-            return '<ul>'+result+'</ul>';
-        }
-
-        function list_ol(entire_group){
-            // Returns the entire li group since the regex grabbed all the items in the grouping
-            // Now I can add <ol> around the results and <li> tags around each list item
-
-            var result = entire_group.trim();
-            result = result.replace(/^[0-9]*\.(.*)/gm,'<li>$1</li>');
-            return '<ol>'+result+'</ol>';
-        }
-
-        function paragraph(match, content) {
-            var result = content.trim();
-            // Prevent insertion of <p> tag inside an existing tag that should not contain p tags
-            if (/^<\/?(h|p|bl|ul|ol|li)/i.test(result)) {
-                return '\n' + content + '\n';
-            }
-            return '\n<p>' + result + '</p>\n';
-        }
-
-        function updatePreview(){
-            var originalText = $(options.textarea_selector).val();
-            var resultText = originalText;
-            //var arrayOfLines = lineString.match(/[^\r\n]+/g);
-            //Process each regular expressions
-            $.each(defaultRegex,function(expression,replacement){
-                var regex = new RegExp(expression,"gm");
-                //Process the regex against the input data.
-                resultText = resultText.replace(regex,replacement);
-            });
-
-
-            //Put the results back onto the pages preview container.
-            $(options.preview_selector).html(resultText);
-        }
 
     }
 
