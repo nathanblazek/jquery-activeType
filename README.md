@@ -1,6 +1,6 @@
 # Welcome to ActiveType Markdown Parser!
 ## By Nathan Blazek
-###Demo
+### Demo
 [http://projects.nateblazek.com/jquery/jquery-activeType/example/basic.html](http://projects.nateblazek.com/jquery/jquery-activeType/example/basic.html)
 ### Installation and Setup
 1. Place the following in the &lt;head&gt; section of your webpage. Make sure the path is correct and relative to where you installed the js file.<br />
