@@ -33,6 +33,7 @@
             {name:'ul',     regex:/((?:\*.*\n)+)/gm,            replace: list_ul},
             {name:'ol',     regex:/((?:[0-9]+\..*\n)+)/gm,      replace: list_ol},
             {name:'para',   regex:/\n([^\n]+)\n/gm,             replace: paragraph},
+            {name:'cleanjs', regex:/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, replace:''},
             {name:'cleanup',regex:/\\/gm,                       replace: ''}
         ];
 
